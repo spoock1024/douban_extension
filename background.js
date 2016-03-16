@@ -28,4 +28,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendRequest){
 	if(!articleData.error){
 		articleData.firstAccess = true;
 	}
+	chrome.runtime.sendMessage({"havebook":"true"});
 });
+
+
