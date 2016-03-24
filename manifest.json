@@ -13,7 +13,7 @@
 	},
 	"permissions" : ["tabs"],
 	"content_scripts":[{
-		"matches":["https://book.douban.com/*"],
+		"matches":["https://book.douban.com/*","http://book.douban.com/*"],
 		"js":["jquery-2.0.0.min.js", "content_script.js"]
 	}]
 }

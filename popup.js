@@ -9,9 +9,10 @@ document.addEventListener('DOMContentLoaded', function () {
 		$("#content-author").text(data.author);
 		$("#content-price").text(data.price);
 		$("#content-ISBN").text(data.isbn);
+		$("#content-exist").text("存在");
 
 		// send request to the server by XMLHttpRequest
-		sendRequest(data.title,data.isbn);
+		//sendRequest(data.title,data.isbn);
 	}
 });
 
