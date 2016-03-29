@@ -79,7 +79,6 @@ if(book_info == null){
 
     var star_element = book_show_div.children[3];
     book_show_div.insertBefore(a_element,star_element);
-    
 
     chrome.runtime.sendMessage(msg);
 }
