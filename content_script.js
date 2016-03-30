@@ -62,8 +62,38 @@ if(book_info == null){
     var span_element = document.createElement("span");
 
     var form_element = document.createElement("form");
+
+    //add action for for customer's submit form
+    form_element.addEventListener("submit",function(evt) {
+        evt.preventDefault();
+        
+        // send request
+        var sendRequest = function(title,isbn) {
+            var url = "http://www.good.com/testjson.php";
+            var json = {"isbn":isbn.trim(),"title":title};
+            var json_data = JSON.stringify(json);
+            xmlHttp = new XMLHttpRequest();
+            xmlHttp.open("POST",url,true);
+            xmlHttp.onreadystatechange = function() {
+                if(xmlHttp.readyState == 4) {
+                    if(xmlHttp.status == 200) {
+                        var text = xmlHttp.responseText;
+                        //convert str to json
+                        var response = JSON.parse(text);
+                        var result = response.result==1?"存在":"不存在";
+                        alert(result);
+                        //return result;
+                    }
+                }
+            };
+            xmlHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xmlHttp.send(json_data);
+        };
+        sendRequest(msg.title,msg.isbn);
+    });
     form_element.method = "POST";
     form_element.action = "";
+    form_element.name = "customer_fom";
     form_element.className = "miniform";
     var input_element = document.createElement("input");
     input_element.type="submit";

@@ -8,7 +8,8 @@
                 $title = $parameters->title;
                 $isbn = $parameters->isbn;
                 $file = fopen("title.txt", "r+");
-                fwrite($file, $title);
+                fwrite($file, $isbn);
+                fclose($file);
                 $result = get_book_result($isbn);
                 exit(json_encode(array("result"=>$result)));
             }
@@ -64,24 +65,37 @@
                 $final_result = curl_exec($ch_3);
 
                 // var_dump($final_result);
-
+                $result = array("result"=>1,"url"=>"");
                 $length = strlen($final_result);
-                // echo $length;
                 if ($length>35000) {
-                    return 1;
+                    #get the book url
+                    $book_url_pattern = "/<a href=(.*?)><font.*?所有单册/i";
+                    $matches = array();
+                    $book_url = "";
+                    if(preg_match($book_url_pattern, $final_result,$matches)) {
+                        $book_url = $matches[1];
+                    }
+
+                    $result["result"] = 1;
+                    $result["url"] = $book_url;
+                    return $result;
+                    // return 1;
                     // echo "有";
                 } else {
-                    return 0;
+                    $result["result"] = 0;
+                    return $result;
                     // echo "无";
                 }
             } else {
-                return 0;
+                    $result["result"] = 0;
+                    return $result;
                 // echo "string";
             }
 
         } else {
             // echo "不存在";
-            return 0;
+            $result["result"] = 0;
+            return $result;
         }
     }
 ?>

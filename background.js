@@ -35,7 +35,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendRequest){
                     var text = xmlHttp.responseText;
                     //convert str to json
                     var response = JSON.parse(text);
-                    var result = response.result==1?"存在":"不存在";
+                    var result = response.result
                     articleData.result = result;
                     //return result;
                 }
