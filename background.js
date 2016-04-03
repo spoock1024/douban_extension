@@ -10,9 +10,16 @@
 };
 
 function checkForValidUrl(tabId, changeInfo, tab) {
-	if(getDomainFromUrl(tab.url).toLowerCase()=="book.douban.com"){
-		chrome.pageAction.show(tabId);
-	}
+    if(changeInfo.status == "complete") {
+        if(getDomainFromUrl(tab.url).toLowerCase()=="book.douban.com"){
+            chrome.pageAction.show(tabId);
+        }
+
+        // chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+        //     chrome.tabs.sendMessage(tabs[0].id, {action: "SendIt"}, function(response) {});  
+        // });
+    }
+
 };
 
 chrome.tabs.onUpdated.addListener(checkForValidUrl);
@@ -23,7 +30,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendRequest){
 	if(request.type!=="cnblog-article-information")
 		return;
 	articleData = request;
-    var sendRequest = function(title,isbn) {
+    var sendRequestToServer = function(title,isbn) {
         var url = "http://www.good.com/testjson.php";
         var json = {"isbn":isbn.trim(),"title":title};
         var json_data = JSON.stringify(json);
@@ -35,16 +42,20 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendRequest){
                     var text = xmlHttp.responseText;
                     //convert str to json
                     var response = JSON.parse(text);
-                    var result = response.result
+                    var result = response.result;
                     articleData.result = result;
-                    //return result;
+
+                    // send message to the content_script.js
+                    chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+                        chrome.tabs.sendMessage(tabs[0].id,{action: result}, function(response) {});  
+                    });
                 }
             }
         };
         xmlHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         xmlHttp.send(json_data);
     };
-    sendRequest(articleData.title,articleData.isbn);
+    sendRequestToServer(articleData.title,articleData.isbn);
 });
 
 

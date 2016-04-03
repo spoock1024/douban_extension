@@ -53,11 +53,6 @@ if(book_info == null){
     a_element.name = "checkbook";
     a_element.href = "#";
     a_element.rel = "nofollow";
-    // var create_a_elemt_str = "<a href='dada'>gdgdg</a>";
-
-    // var create_a_elemt_str = "<input type=\"radio\" name=\"sex\">"
-
-    // var a_element = document.createElement("<input type=\"radio\" name=\"sex\">");
 
     var span_element = document.createElement("span");
 
@@ -108,8 +103,95 @@ if(book_info == null){
     a_element.appendChild(span_element);
 
     var star_element = book_show_div.children[3];
-    book_show_div.insertBefore(a_element,star_element);
 
+    //即使在页面上增加了按钮，但是由于浏览器的同源策略的存在，导致当点击按钮时的请求还是无法发送。
+    // 所以这种方法还是存在一定的局限性
+    // book_show_div.insertBefore(a_element,star_element);
+
+    // 不通过button发送请求，直接发送Ajax请求。
+    // 但是由于豆瓣的页面使用的是https的协议，如果直接使用http协议，则请求会被停止。
+    // 由于同源策略的存在，使得无法在content_script.js中发送信息
+    // var sendRequest = function(title,isbn) {
+    //     // var url = "http://www.good.com/testjson.php";
+    //     var url = "https://www.good.com/js/testjson.php";
+    //     var json = {"isbn":isbn.trim(),"title":title};
+    //     var json_data = JSON.stringify(json);
+    //     xmlHttp = new XMLHttpRequest();
+    //     xmlHttp.open("POST",url,true);
+    //     xmlHttp.onreadystatechange = function() {
+    //         if(xmlHttp.readyState == 4) {
+    //             if(xmlHttp.status == 200) {
+
+    //                 //Modify DOM
+    //                 var buy_info_div =  document.getElementById("buyinfo");
+    //                 // get the buy_infO-div's parent element
+    //                 var aside_div = document.getElementsByClassName("aside")[0];
+    //                 // create element
+    //                 var show_book_info_element = document.createElement("div");
+    //                 show_book_info_element.className = "gray_ad";
+    //                 show_book_info_element.id = "whulib";
+    //                 var  h2_element = document.createElement("h2");
+    //                 // var h2_text = document.createTextNode("武汉大学图书馆没有这本书");
+    //                 // h2_element.appendChild(h2_text);
+    //                 show_book_info_element.appendChild(h2_element);
+    //                 aside_div.insertBefore(show_book_info_element,buy_info_div);
+
+
+    //                 var text = xmlHttp.responseText;
+    //                 //convert str to json
+    //                 var response = JSON.parse(text);
+    //                 var result = response.result;
+    //                 var result_code = data.result["result"];
+    //                 if(result_code == 1) {
+    //                     var book_url = result["url"];
+    //                     h2_element.innerHTML = '<a href='+book_url+' target="_blank">whu</a>';
+    //                 } else {
+    //                     h2_element.innerHTML = '不存在';
+    //                 }
+    //             }
+    //         }
+    //     };
+    //     xmlHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    //     xmlHttp.send(json_data);
+    // };
+    // sendRequest(msg.title,msg.isbn);
     chrome.runtime.sendMessage(msg);
 }
+
+//接受从background.js发送过来的信息
+chrome.runtime.onMessage.addListener(function(request, sender, sendRequest){
+    var result = request.action;
+
+    var result_code = result["result"];
+
+
+    //Modify DOM
+    var buy_info_div =  document.getElementById("buyinfo");
+    // get the buy_infO-div's parent element
+    var aside_div = document.getElementsByClassName("aside")[0];
+    // create element
+    var show_book_info_element = document.createElement("div");
+    show_book_info_element.className = "gray_ad";
+    show_book_info_element.id = "whulib";
+    var  h2_element = document.createElement("h2");
+    // var h2_text = document.createTextNode("武汉大学图书馆没有这本书");
+    // h2_element.appendChild(h2_text);
+    show_book_info_element.appendChild(h2_element);
+    aside_div.insertBefore(show_book_info_element,buy_info_div);
+
+
+    if(result_code == 1) {
+        var book_url = result["url"];
+        h2_element.innerHTML = '<a href='+book_url+' target="_blank">whu</a>';
+    } else {
+        h2_element.innerHTML = '不存在';
+    }
+
+
+    // alert(request.action["url"]);
+    // alert(request.action["result"]);
+
+});
+
+
 
