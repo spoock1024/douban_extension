@@ -188,6 +188,20 @@
             }
         }
 
+        $lenth = sizeof($processed_book_infos)/2;  //每一个数组中的元素被计算了2遍
+
+        for($i=0;$i<$lenth;$i++) {
+            $count = 0;
+            $lib_name = $processed_book_infos[$i];
+            $lib_info = $processed_book_infos[$lib_name];
+            foreach ($lib_info as  $value) {
+                // var_dump($value);
+                $count += $value["count"];
+            }
+            $processed_book_infos[$lib_name]["count"] = $count;
+
+        }
+
         return $processed_book_infos;
     }
 ?>
