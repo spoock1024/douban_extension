@@ -180,9 +180,62 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendRequest){
     aside_div.insertBefore(show_book_info_element,buy_info_div);
 
 
-    if(result_code == 1) {
+    if(result_code == 1) {  //图书馆存在
         var book_url = result["url"];
-        h2_element.innerHTML = '<a href='+book_url+' target="_blank">whu</a>';
+        var book_infos = result["info"];
+
+        //得到图书馆信息
+        var libs = Array();
+        for(key in book_infos) {
+            if(!key.match(/^\d+$/)) { //判断是否为数字
+                libs.push(key);
+            }
+        }
+
+        
+        var show_book_infos = Array();
+        var len = libs.length;
+        for(var i=0;i<len;i++) {
+            var lib = libs[i];
+            var lib_info = book_infos[lib];
+            // console.log(lib_info);
+            var all_types = "";
+            var book_type_num = "";  //不同种类的书籍的数量
+            for(item in lib_info) {
+                var info = lib_info[item];
+                var type = info["type"];
+                var num = info["count"];
+                all_types += type+"/";
+                book_type_num += num+"/";
+            }
+            //去掉最后的"/"符号
+            all_types = all_types.slice(0,all_types.length-1);
+            book_type_num = book_type_num.slice(0,book_type_num.length-1);
+            show_book_infos.push([lib,all_types,book_type_num]);
+        }
+
+        //添加表头
+        var tableHeader = new Array("分馆","类型","数量");
+        var s = '<table><tr>';
+        for(index in tableHeader) {
+            s += '<td style="padding:3px;text-align:center;border:1px dashed #ddd;"><b>' + tableHeader[index] + '</b></td>';
+        }
+        s += '</tr>';
+
+        //添加书籍信息
+        for(i in show_book_infos) {
+            s += '<tr>';
+            var book_data = show_book_infos[i];
+            for(j in book_data) {
+                s += '<td style="padding:3px;text-align:center;border:1px dashed #ddd;">' + book_data[j] + '</td>';
+            }
+            s += '</tr>';
+        }
+        // 加上链接
+        s += '</table>';
+        s += '<a href='+book_url+' target="_blank">whu</a>';
+        // h2_element.innerHTML = '<a href='+book_url+' target="_blank">whu</a>';
+        h2_element.innerHTML = s;
     } else {
         h2_element.innerHTML = '不存在';
     }
