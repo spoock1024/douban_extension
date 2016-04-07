@@ -217,6 +217,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendRequest){
         //添加表头
         var tableHeader = new Array("分馆","类型","数量");
         var s = '<table><tr>';
+
+        //need to buautify the html
+        // TODO
         for(index in tableHeader) {
             s += '<td style="padding:3px;text-align:center;border:1px dashed #ddd;"><b>' + tableHeader[index] + '</b></td>';
         }

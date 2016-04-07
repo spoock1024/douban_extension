@@ -67,6 +67,10 @@
                 // var_dump($final_result);
                 $result = array("result"=>1,"url"=>"");
                 $length = strlen($final_result);
+                
+                // maybe there are many results which have one more list
+                // so  It will need more judge to get the book_url
+                // TODO
                 if ($length>35000) {
                     #get the book url
                     $book_url_pattern = "/<a href=(.*?)><font.*?所有单册/i";
